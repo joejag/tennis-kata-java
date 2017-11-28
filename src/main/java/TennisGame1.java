@@ -1,31 +1,35 @@
-import java.util.Arrays;
-
 public class TennisGame1 implements TennisGame {
 
-    private int m_score1 = 0;
-    private int m_score2 = 0;
+    private final String player1Name;
+    private final String player2Name;
+    private int scoreOne = 0;
+    private int scoreTwo = 0;
 
     public TennisGame1(String player1Name, String player2Name) {
+        this.player1Name = player1Name;
+        this.player2Name = player2Name;
     }
 
     public void wonPoint(String playerName) {
-        if (playerName.equals("player1"))
-            m_score1 += 1;
+        if (playerName.equals(player1Name))
+            scoreOne += 1;
         else
-            m_score2 += 1;
+            scoreTwo += 1;
     }
 
     public String getScore() {
-        if (m_score1 == m_score2 && Arrays.asList(0, 1, 2).contains(m_score1))
-            return basicScore(m_score1) + "-All";
+        if (Math.max(scoreOne, scoreTwo) >= 4) {
+            String winningPlayer = scoreOne > scoreTwo ? player1Name : player2Name;
+            if (Math.abs(scoreOne - scoreTwo) >= 2) return "Win for " + winningPlayer;
+            if (Math.abs(scoreOne - scoreTwo) == 1) return "Advantage " + winningPlayer;
+        }
 
-        if (m_score1 == m_score2)
+        if (scoreOne == scoreTwo && scoreOne >= 3)
             return "Deuce";
+        if (scoreOne == scoreTwo)
+            return basicScore(scoreOne) + "-All";
 
-        if (m_score1 < 4 && m_score2 < 4)
-            return basicScore(m_score1) + "-" + basicScore(m_score2);
-
-        return faceOff();
+        return basicScore(scoreOne) + "-" + basicScore(scoreTwo);
     }
 
     private String basicScore(int score) {
@@ -40,16 +44,7 @@ public class TennisGame1 implements TennisGame {
                 return "Forty";
         }
 
-        throw new IllegalArgumentException("bang: cannot be higher than 3 but is " + score );
+        throw new IllegalArgumentException("bang: cannot be higher than 3 but is " + scoreOne + " - " + scoreTwo);
     }
 
-    private String faceOff() {
-        int difference = m_score1 - m_score2;
-        if (difference == 1) return "Advantage player1";
-        if (difference >= 2) return "Win for player1";
-        if (difference == -1) return "Advantage player2";
-        if (difference <= -2) return "Win for player2";
-
-        throw new IllegalArgumentException("bang " + m_score1 + " - " + m_score2);
-    }
 }
